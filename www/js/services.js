@@ -23,6 +23,38 @@ angular.module('songhop.services', [])
     queue: []
   };
   var media;
+    o.playCurrentSong = function() {
+    var defer = $q.defer();
+
+    // play the current song's preview
+    media = new Audio(o.queue[0].preview_url);
+
+    // when song loaded, resolve the promise to let controller know.
+    media.addEventListener("loadeddata", function() {
+      defer.resolve();
+    });
+
+    media.play();
+
+    return defer.promise;
+  }
+
+  // used when switching to favorites tab
+  o.haltAudio = function() {
+    if (media) media.pause();
+  }
+
+   o.init = function() {
+    if (o.queue.length === 0) {
+      // if there's nothing in the queue, fill it.
+      // this also means that this is the first call of init.
+      return o.getNextSongs();
+
+    } else {
+      // otherwise, play the current song
+      return o.playCurrentSong();
+    }
+  }
 
   o.getNextSongs = function() {
     return $http({

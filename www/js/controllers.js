@@ -5,11 +5,12 @@ angular.module('songhop.controllers', ['ionic', 'songhop.services'])
 Controller for the discover page
 */
 .controller('DiscoverCtrl', function($scope, $timeout, User, Recommendations) {
-  // get our first songs
-  Recommendations.getNextSongs()
+   Recommendations.init()
     .then(function(){
       $scope.currentSong = Recommendations.queue[0];
+      Recommendations.playCurrentSong();
     });
+
   //fired when we favorite /skip a song
   $scope.sendFeedback = function(bool){
     //first add to favorites if they favorited
@@ -24,12 +25,6 @@ Controller for the discover page
         // $timeout to allow animation to complete
       $scope.currentSong = Recommendations.queue[0];
     }, 250);
-
-    Recommendations.getNextSongs()
-        .then(function(){
-            $scope.currentSong = Recommendations.queue[0];
-            Recommendations.playCurrentSong();
-        });
     }
     //used for retrieving the next album image.
     //if there isn't an album image available next, return empty string.
@@ -40,7 +35,6 @@ Controller for the discover page
         return '';
     }
 })
-
 
 /*
 Controller for the favorites page
@@ -57,6 +51,12 @@ Controller for the favorites page
 /*
 Controller for our tab bar
 */
-.controller('TabsCtrl', function($scope) {
-
+.controller('TabsCtrl', function($scope, Recommendations) {
+        //stop audio when going to favorites page
+        $scope.enteringFavorites = function() {
+            Recommendations.haltAudio();
+        }
+          $scope.leavingFavorites = function(){
+            Recommendations.init();
+        }
 });
