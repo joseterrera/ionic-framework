@@ -65,6 +65,7 @@ Controller for the favorites page
 .controller('FavoritesCtrl', function($scope, User) {
     //get the list of our favorites from the user service
     $scope.favorites = User.favorites;
+    $scope.username = User.username;
     $scope.removeSong = function(song, index){
         User.removeSongFromFavorites(song, index);
     }
@@ -89,6 +90,13 @@ Controller for our tab bar
           $scope.leavingFavorites = function(){
             Recommendations.init();
         }
+        $scope.logout = function() {
+    User.destroySession();
+
+    // instead of using $state.go, we're going to redirect.
+    // reason: we need to ensure views aren't cached.
+    $window.location.href = 'index.html';
+  }
 })
 .controller('SplashCtrl', function($scope, $state, User) {
 
